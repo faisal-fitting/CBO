@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="CBO.AI current system and repository solution architecture.">
+<title>CBO.AI solution architecture</title>
+<style>
+:root{--paper:#050505;--surface:#0d1324;--surface-2:#111a31;--ink:#f8f9ff;--muted:#93a4c7;--soft:#647392;--rule:#263252;--accent:#2e5bff;--cyan:#00d1ff;--green:#38d39f;--amber:#f5b942}*{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--paper)}body{margin:0;background:radial-gradient(circle at 85% 0%,rgba(46,91,255,.14),transparent 30rem),var(--paper);color:var(--ink);font-family:"Noto Sans Arabic","Segoe UI",Arial,sans-serif;font-size:16px;line-height:1.7}a{color:#8fb0ff;text-decoration-thickness:1px;text-underline-offset:3px}a:hover{color:var(--cyan)}header,nav,main,footer{width:min(1180px,calc(100% - 40px));margin-inline:auto}header{padding:76px 0 40px;border-bottom:1px solid var(--rule)}.eyebrow,.tag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:.12em}.eyebrow{color:var(--cyan);font-size:12px;font-weight:700}h1{font-size:clamp(42px,8vw,82px);line-height:.95;letter-spacing:-.055em;margin:14px 0 22px;max-width:900px}header p{max-width:720px;color:var(--muted);font-size:18px}header .links{display:flex;gap:20px;flex-wrap:wrap;margin-top:28px}nav{padding:32px 0 24px;border-bottom:1px solid var(--rule)}nav h2{margin:0 0 16px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.toc{margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 28px;list-style:none;counter-reset:item}.toc li{counter-increment:item;display:flex;gap:8px;color:var(--soft)}.toc li:before{content:counter(item,decimal-leading-zero);font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);padding-top:5px}.toc a{color:var(--muted);text-decoration:none}main{padding:20px 0 96px}h2{font-size:clamp(28px,4vw,44px);line-height:1.1;letter-spacing:-.035em;margin:88px 0 24px;scroll-margin-top:20px}h3{font-size:22px;margin:44px 0 14px;color:#dce5ff}p{color:var(--muted);max-width:900px}ul,ol{color:var(--muted);padding-left:24px;max-width:980px}li{margin:.45rem 0}strong{color:var(--ink)}code{font:13px ui-monospace,SFMono-Regular,Menlo,monospace;background:#111a31;border:1px solid var(--rule);padding:2px 6px;border-radius:4px;color:#b9caff}.table-scroll,.diagram-scroll{overflow-x:auto;overscroll-behavior-inline:contain}.table-scroll{border:1px solid var(--rule);border-radius:8px;margin:24px 0 36px;background:rgba(13,19,36,.7)}table{border-collapse:collapse;width:100%;min-width:720px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--rule)}th{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#b9caff;background:#0d1427}td{color:var(--muted)}tr:last-child td{border-bottom:0}figure{margin:36px 0 56px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);overflow:hidden}svg{display:block;width:100%;min-width:980px;height:auto}.diagram-title{font:700 28px "Noto Sans Arabic","Segoe UI",Arial,sans-serif;fill:#f8f9ff;letter-spacing:-.02em}.diagram-footer{font:400 16px "Noto Sans Arabic","Segoe UI",Arial,sans-serif;fill:#93a4c7}.tag{font-size:12px;font-weight:700;fill:#00d1ff}.node-name{font:700 20px "Noto Sans Arabic","Segoe UI",Arial,sans-serif;fill:#f8f9ff}.node-detail{font:400 16px "Noto Sans Arabic","Segoe UI",Arial,sans-serif;fill:#93a4c7}footer{padding:28px 0 48px;border-top:1px solid var(--rule);color:var(--soft);font:12px ui-monospace,SFMono-Regular,Menlo,monospace}@media(max-width:760px){header,nav,main,footer{width:min(100% - 24px,1180px)}header{padding-top:48px}.toc{grid-template-columns:1fr}h2{margin-top:64px}figure{margin-inline:-12px;border-radius:0}body{font-size:15px}}@media print{body{background:#fff;color:#111}header,nav,main,footer{width:100%}nav{display:none}figure,.table-scroll{break-inside:avoid;border-color:#bbb}svg{min-width:0}}
+</style>
+</head>
+<body>
+<header><p class="eyebrow">SOFT-AI REPOSITORY · SOLUTION VIEW</p><h1>CBO.AI solution architecture</h1><p>Current application structure, report-generation flow, AI orchestration, data movement, integrations, security facts, and repository plans.</p><div class="links"><a href="solution-architecture.md">Markdown source</a><a href="#1-system-overview">Start reading</a></div></header>
+<nav aria-label="Document contents"><h2>Contents</h2><ol class="toc"><li><a href="#1-system-overview">System overview</a></li><li><a href="#2-repository-and-technology">Repository and technology</a></li><li><a href="#3-runtime-and-request-paths">Runtime and request paths</a></li><li><a href="#4-business-analysis-workflow">Business-analysis workflow</a></li><li><a href="#5-ai-agents-and-tools">AI agents and tools</a></li><li><a href="#6-data-state-and-retention">Data, state, and retention</a></li><li><a href="#7-integrations-and-information-flow">Integrations and information flow</a></li><li><a href="#8-identity-access-and-security">Identity, access, and security</a></li><li><a href="#9-build-release-and-reliability">Build, release, and reliability</a></li><li><a href="#10-repository-plans">Repository plans</a></li><li><a href="#11-source-index">Source index</a></li></ol></nav>
+<main id="main">
+<h2 id="about-this-document">About this document</h2>
+<ul>
+<li><strong>Scope:</strong> application structure, responsibilities, report-generation flow, AI orchestration, data movement, integrations, security facts, build behavior, and repository plans.</li>
+<li><strong>Current system:</strong> statements are based on source in the <code>soft-ai</code> repository. Items marked <strong>not verified</strong> are not established by repository code.</li>
+<li><strong>Repository plans:</strong> planned behavior is labelled and is not described as current behavior.</li>
+<li><strong>Security:</strong> credential values are not reproduced.</li>
+<li><strong>Sources:</strong> the <a href="#11-source-index">source index</a> links to the main implementation files.</li>
+</ul>
+<h2 id="1-system-overview">1. System overview</h2>
+<ul>
+<li><strong>Business purpose:</strong> CBO.AI creates Arabic business-intelligence reports for Saudi food-and-beverage businesses.</li>
+<li><strong>Primary users:</strong> owners and managers of cafes, restaurants, cloud kitchens, and fine-dining businesses.</li>
+<li><strong>Main input:</strong> business identity, Google Place, social-media handles, monthly financial values, and menu-item economics.</li>
+<li><strong>Main output:</strong> a structured report with a strategic directive, financial analysis, digital analysis, market analysis, and an action plan.</li>
+<li><strong>Follow-up:</strong> a report-scoped chat answers questions using stored workflow and report data.</li>
+</ul>
+<figure id="system-context"><div class="diagram-scroll" role="region" aria-label="One application turns business inputs into an AI report.; scroll horizontally on small screens" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="system-context-title system-context-desc"><title id="system-context-title">One application turns business inputs into an AI report.</title><desc id="system-context-desc">A Saudi food and beverage owner uses an Arabic browser application where Next.js and Mastra run together and call managed model, data, storage, and telemetry providers.</desc><defs>
+<marker id="system-context-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#93a4c7"/></marker>
+<marker id="system-context-arrow-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2e5bff"/></marker>
+<marker id="system-context-arrow-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#00d1ff"/></marker>
+</defs>
+<rect width="1280" height="720" fill="#050505"/><text x="40" y="56" class="diagram-title">One application turns business inputs into an AI report.</text><g class="zone"><rect x="32" y="96" width="824" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="48" y="104" width="144" height="20" rx="4" fill="#050505"/>
+<text x="56" y="120" class="tag">CBO.AI APPLICATION</text></g><g class="zone"><rect x="896" y="96" width="352" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="912" y="104" width="128" height="20" rx="4" fill="#050505"/>
+<text x="920" y="120" class="tag">MANAGED SERVICES</text></g><path d="M272 340 H376" fill="none" stroke="#00d1ff" stroke-width="1.5" marker-end="url(#system-context-arrow-link)"/><path d="M752 340 H944" fill="none" stroke="#00d1ff" stroke-width="1.5" marker-end="url(#system-context-arrow-link)"/><path d="M592 408 H832 Q840 408 840 416 V496 Q840 504 848 504 H944" fill="none" stroke="#93a4c7" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#system-context-arrow)"/><g class="node input" data-node="F&amp;B owner / manager">
+<rect x="64" y="276" width="208" height="128" rx="8" fill="#050505"/>
+<rect x="64" y="276" width="208" height="128" rx="8" fill="#10182a" stroke="#647392" stroke-width="1.2"/>
+<text x="84" y="300" class="tag">USER</text>
+<text x="84" y="328" class="node-name">F&amp;B owner / manager</text><text x="84" y="348" class="node-detail">Arabic-first browser</text>
+</g><g class="node focal" data-node="Next.js + embedded Mastra">
+<rect x="376" y="252" width="376" height="176" rx="8" fill="#050505"/>
+<rect x="376" y="252" width="376" height="176" rx="8" fill="#0c1b55" stroke="#2e5bff" stroke-width="1.2"/>
+<text x="396" y="276" class="tag">ONE APPLICATION</text>
+<text x="396" y="304" class="node-name">Next.js + embedded Mastra</text><text x="396" y="324" class="node-detail">Form · reports · chat</text><text x="396" y="348" class="node-detail">Routes · workflow · agents</text>
+</g><g class="node external" data-node="Managed providers">
+<rect x="944" y="252" width="256" height="144" rx="8" fill="#050505"/>
+<rect x="944" y="252" width="256" height="144" rx="8" fill="#0a101e" stroke="#34415f" stroke-width="1.2"/>
+<text x="964" y="276" class="tag">DATA + AI</text>
+<text x="964" y="304" class="node-name">Managed providers</text><text x="964" y="324" class="node-detail">Models · Places · reviews</text><text x="964" y="348" class="node-detail">Social data · Turso</text>
+</g><g class="node store" data-node="Observability">
+<rect x="944" y="456" width="256" height="120" rx="8" fill="#050505"/>
+<rect x="944" y="456" width="256" height="120" rx="8" fill="#111a31" stroke="#405071" stroke-width="1.2"/>
+<text x="964" y="480" class="tag">TELEMETRY</text>
+<text x="964" y="508" class="node-name">Observability</text><text x="964" y="528" class="node-detail">DuckDB + Mastra Platform</text>
+</g>
+<line x1="40" y1="656" x2="1240" y2="656" stroke="#263252"/><text x="40" y="688" class="diagram-footer">Solid paths: requests and provider calls. Dashed path: telemetry export.</text></svg></div></figure>
+<h3 id="1-system-overview-responsibility-boundaries">Responsibility boundaries</h3>
+<div class="table-scroll" role="region" aria-label="Architecture reference table; scroll horizontally on small screens" tabindex="0"><table>
+<thead><tr><th>Part</th><th>Owns</th><th>Does not establish</th></tr></thead><tbody>
+<tr><td>Browser application</td><td>Arabic-first form, generation progress, report presentation, charts, map, and follow-up chat</td><td>Server authorization or durable business records</td></tr>
+<tr><td>Next.js server</td><td>API routes, server actions, workflow streaming, report restoration, and chat transport</td><td>Independent service isolation from Mastra</td></tr>
+<tr><td>Mastra runtime</td><td>Workflow execution, agents, tools, memory, run state, and observability</td><td>Deterministic correctness of model-generated analysis</td></tr>
+<tr><td>Deterministic financial module</td><td>Revenue, cost, margin, break-even, menu-item, and capacity calculations</td><td>Market, review, or social-media interpretation</td></tr>
+<tr><td>External providers</td><td>Places, reviews, social data, web search, model inference, and managed storage</td><td>Application access control or report ownership</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Runtime shape:</strong> Next.js and Mastra are imported into the same application source. No separate Mastra deployment boundary is defined in this repository.</li>
+<li><strong>Language and direction:</strong> the product is Arabic-first and renders the document root right-to-left.</li>
+</ul>
+<h2 id="2-repository-and-technology">2. Repository and technology</h2>
+<h3 id="2-repository-and-technology-repository-map">Repository map</h3>
+<div class="table-scroll" role="region" aria-label="Architecture reference table; scroll horizontally on small screens" tabindex="0"><table>
+<thead><tr><th>Path</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>src/app/</code></td><td>App Router pages, report routes, API routes, and server actions</td></tr>
+<tr><td><code>src/components/</code></td><td>Business form, report shell, progress UI, chat, maps, charts, and shadcn-based controls</td></tr>
+<tr><td><code>src/mastra/workflows/</code></td><td>End-to-end business-analysis workflow</td></tr>
+<tr><td><code>src/mastra/agents/</code></td><td>CBO, financial, digital, market, semantic, and social agents</td></tr>
+<tr><td><code>src/mastra/tools/</code></td><td>Google Places, reviews, social scraping, web search, manual input, and report retrieval</td></tr>
+<tr><td><code>src/mastra/shared/</code></td><td>Zod schemas and deterministic financial calculations</td></tr>
+<tr><td><code>src/store/</code></td><td>Browser-persisted report and form state</td></tr>
+<tr><td><code>public/</code></td><td>Product logo and static assets</td></tr>
+</tbody></table></div>
+<h3 id="2-repository-and-technology-technology-choices">Technology choices</h3>
+<div class="table-scroll" role="region" aria-label="Architecture reference table; scroll horizontally on small screens" tabindex="0"><table>
+<thead><tr><th>Technology</th><th>Role</th></tr></thead><tbody>
+<tr><td>Next.js 16 / React 19</td><td>Pages, client UI, route handlers, and server actions</td></tr>
+<tr><td>Mastra</td><td>Workflow, agents, tools, memory, storage abstraction, and observability</td></tr>
+<tr><td>AI SDK / Mastra AI SDK</td><td>Browser chat hooks and stream conversion between Next.js and Mastra</td></tr>
+<tr><td>Zod</td><td>Workflow, tool, structured-model-output, and report validation</td></tr>
+<tr><td>TypeScript</td><td>Strict source typing; the production build is configured to ignore type errors</td></tr>
+<tr><td>Tailwind CSS 4 / shadcn / Base UI</td><td>RTL interface and component styling</td></tr>
+<tr><td>Zustand</td><td>Browser state persisted in local storage</td></tr>
+<tr><td>Recharts / MapLibre / React Flow</td><td>Charts, competitor mapping, and visual report components</td></tr>
+<tr><td>Motion</td><td>Form, progress, report, and navigation transitions</td></tr>
+<tr><td>LibSQL / Turso</td><td>Default Mastra persistence configured by a fixed database URL and environment token</td></tr>
+<tr><td>DuckDB</td><td>Local observability-domain storage</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Single package:</strong> the repository contains one application package and one pnpm lockfile; no workspace definition is present.</li>
+<li><strong>Installed but not active:</strong> <code>better-auth</code>, LiveKit React Native packages, and some other dependencies have no application path found in <code>src/</code>.</li>
+</ul>
+<h2 id="3-runtime-and-request-paths">3. Runtime and request paths</h2>
+<figure id="request-paths"><div class="diagram-scroll" role="region" aria-label="Run IDs restore reports; Thread IDs restore conversations.; scroll horizontally on small screens" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="request-paths-title request-paths-desc"><title id="request-paths-title">Run IDs restore reports; Thread IDs restore conversations.</title><desc id="request-paths-desc">The browser starts, restores, and discusses a report through three Next.js request paths backed by Mastra run state and memory.</desc><defs>
+<marker id="request-paths-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#93a4c7"/></marker>
+<marker id="request-paths-arrow-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2e5bff"/></marker>
+<marker id="request-paths-arrow-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#00d1ff"/></marker>
+</defs>
+<rect width="1280" height="720" fill="#050505"/><text x="40" y="56" class="diagram-title">Run IDs restore reports; Thread IDs restore conversations.</text><g class="zone"><rect x="32" y="96" width="264" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="48" y="104" width="96" height="20" rx="4" fill="#050505"/>
+<text x="56" y="120" class="tag">BROWSER</text></g><g class="zone"><rect x="336" y="96" width="552" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="352" y="104" width="112" height="20" rx="4" fill="#050505"/>
+<text x="360" y="120" class="tag">NEXT.JS SERVER</text></g><g class="zone"><rect x="928" y="96" width="320" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="944" y="104" width="96" height="20" rx="4" fill="#050505"/>
+<text x="952" y="120" class="tag">MASTRA STATE</text></g><path d="M264 208 H384" fill="none" stroke="#00d1ff" stroke-width="1.5" marker-end="url(#request-paths-arrow-link)"/><path d="M632 208 H976" fill="none" stroke="#2e5bff" stroke-width="1.5" marker-end="url(#request-paths-arrow-accent)"/><path d="M264 356 H384" fill="none" stroke="#00d1ff" stroke-width="1.5" marker-end="url(#request-paths-arrow-link)"/><path d="M632 356 H976" fill="none" stroke="#93a4c7" stroke-width="1.5" marker-end="url(#request-paths-arrow)"/><path d="M264 504 H384" fill="none" stroke="#00d1ff" stroke-width="1.5" marker-end="url(#request-paths-arrow-link)"/><path d="M632 504 H976" fill="none" stroke="#93a4c7" stroke-width="1.5" marker-end="url(#request-paths-arrow)"/><g class="node input" data-node="Business form">
+<rect x="64" y="148" width="200" height="120" rx="8" fill="#050505"/>
+<rect x="64" y="148" width="200" height="120" rx="8" fill="#10182a" stroke="#647392" stroke-width="1.2"/>
+<text x="84" y="172" class="tag">CREATE</text>
+<text x="84" y="200" class="node-name">Business form</text><text x="84" y="220" class="node-detail">POST report stream</text>
+</g><g class="node focal" data-node="/api/report/stream">
+<rect x="384" y="140" width="248" height="136" rx="8" fill="#050505"/>
+<rect x="384" y="140" width="248" height="136" rx="8" fill="#0c1b55" stroke="#2e5bff" stroke-width="1.2"/>
+<text x="404" y="164" class="tag">STREAM</text>
+<text x="404" y="192" class="node-name">/api/report/stream</text><text x="404" y="212" class="node-detail">Start workflow</text><text x="404" y="236" class="node-detail">Return progress + Run ID</text>
+</g><g class="node store" data-node="Workflow storage">
+<rect x="976" y="148" width="224" height="120" rx="8" fill="#050505"/>
+<rect x="976" y="148" width="224" height="120" rx="8" fill="#111a31" stroke="#405071" stroke-width="1.2"/>
+<text x="996" y="172" class="tag">RUN STATE</text>
+<text x="996" y="200" class="node-name">Workflow storage</text><text x="996" y="220" class="node-detail">Steps · output · status</text>
+</g><g class="node input" data-node="/report/{runId}">
+<rect x="64" y="296" width="200" height="120" rx="8" fill="#050505"/>
+<rect x="64" y="296" width="200" height="120" rx="8" fill="#10182a" stroke="#647392" stroke-width="1.2"/>
+<text x="84" y="320" class="tag">RESTORE</text>
+<text x="84" y="348" class="node-name">/report/{runId}</text><text x="84" y="368" class="node-detail">Reload or reconnect</text>
+</g><g class="node backend" data-node="Actions + observe route">
+<rect x="384" y="288" width="248" height="136" rx="8" fill="#050505"/>
+<rect x="384" y="288" width="248" height="136" rx="8" fill="#0d1324" stroke="#46577f" stroke-width="1.2"/>
+<text x="404" y="312" class="tag">READ / OBSERVE</text>
+<text x="404" y="340" class="node-name">Actions + observe route</text><text x="404" y="360" class="node-detail">Load Run</text><text x="404" y="384" class="node-detail">Reconnect stream</text>
+</g><g class="node store" data-node="Persisted outputs">
+<rect x="976" y="296" width="224" height="120" rx="8" fill="#050505"/>
+<rect x="976" y="296" width="224" height="120" rx="8" fill="#111a31" stroke="#405071" stroke-width="1.2"/>
+<text x="996" y="320" class="tag">REPORT DATA</text>
+<text x="996" y="348" class="node-name">Persisted outputs</text><text x="996" y="368" class="node-detail">Manifest + step data</text>
+</g><g class="node input" data-node="Report chat">
+<rect x="64" y="444" width="200" height="120" rx="8" fill="#050505"/>
+<rect x="64" y="444" width="200" height="120" rx="8" fill="#10182a" stroke="#647392" stroke-width="1.2"/>
+<text x="84" y="468" class="tag">FOLLOW-UP</text>
+<text x="84" y="496" class="node-name">Report chat</text><text x="84" y="516" class="node-detail">GET / POST messages</text>
+</g><g class="node backend" data-node="/api/chat">
+<rect x="384" y="436" width="248" height="136" rx="8" fill="#050505"/>
+<rect x="384" y="436" width="248" height="136" rx="8" fill="#0d1324" stroke="#46577f" stroke-width="1.2"/>
+<text x="404" y="460" class="tag">CHAT</text>
+<text x="404" y="488" class="node-name">/api/chat</text><text x="404" y="508" class="node-detail">CBO agent stream</text><text x="404" y="532" class="node-detail">Supplied Thread ID</text>
+</g><g class="node store" data-node="Messages + context">
+<rect x="976" y="444" width="224" height="120" rx="8" fill="#050505"/>
+<rect x="976" y="444" width="224" height="120" rx="8" fill="#111a31" stroke="#405071" stroke-width="1.2"/>
+<text x="996" y="468" class="tag">MEMORY</text>
+<text x="996" y="496" class="node-name">Messages + context</text><text x="996" y="516" class="node-detail">Thread + resource user</text>
+</g>
+<line x1="40" y1="656" x2="1240" y2="656" stroke="#263252"/><text x="40" y="688" class="diagram-footer">The source uses supplied Run and Thread identifiers directly; access facts are detailed in section 8.</text></svg></div></figure>
+<h3 id="3-runtime-and-request-paths-report-generation">Report generation</h3>
+<ol>
+<li>The browser validates and submits the business form.</li>
+<li>The browser creates a random Thread identifier and calls <code>POST /api/report/stream</code>.</li>
+<li>The route invokes Mastra's <code>business-analysis-workflow</code> and streams workflow events through the AI SDK protocol.</li>
+<li>The browser records the returned Run identifier, navigates to <code>/report/{runId}</code>, and renders progress events.</li>
+<li>On completion, the assembled report manifest and collected workflow-step data are rendered.</li>
+</ol>
+<h3 id="3-runtime-and-request-paths-restore-and-follow-up">Restore and follow-up</h3>
+<ul>
+<li><strong>Report route:</strong> <code>/report/{runId}</code> reads persisted workflow state through server actions.</li>
+<li><strong>Running workflow:</strong> <code>POST /api/report/observe</code> reconnects to an existing Run stream.</li>
+<li><strong>Chat history:</strong> <code>GET /api/chat?threadId=...</code> recalls messages from CBO agent memory.</li>
+<li><strong>Chat response:</strong> <code>POST /api/chat</code> streams a CBO agent response against the supplied Thread.</li>
+<li><strong>Report lookup tool:</strong> the CBO agent can load manifest or selected workflow-step outputs using a Run identifier stored in working memory.</li>
+<li><strong>Seed endpoint:</strong> <code>POST /api/report/seed</code> validates a report manifest and writes it into CBO working memory.</li>
+</ul>
+<ul>
+<li><strong>Execution limit:</strong> report, observe, seed, and chat routes declare a 300-second maximum duration where configured.</li>
+<li><strong>Client continuity:</strong> Run identifier, Thread identifier, business name, form step, and form data persist under <code>cbo-report</code>; an independent form draft persists under <code>cbo-form-draft</code>.</li>
+</ul>
+<h2 id="4-business-analysis-workflow">4. Business-analysis workflow</h2>
+<figure id="report-workflow"><div class="diagram-scroll" role="region" aria-label="Deterministic calculations anchor a multi-agent report workflow.; scroll horizontally on small screens" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="report-workflow-title report-workflow-desc"><title id="report-workflow-title">Deterministic calculations anchor a multi-agent report workflow.</title><desc id="report-workflow-desc">The workflow computes financials, enriches external data, extracts signals, creates a directive, runs three experts, synthesizes an action plan, and assembles a report.</desc><defs>
+<marker id="report-workflow-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#93a4c7"/></marker>
+<marker id="report-workflow-arrow-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2e5bff"/></marker>
+<marker id="report-workflow-arrow-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#00d1ff"/></marker>
+</defs>
+<rect width="1280" height="720" fill="#050505"/><text x="40" y="56" class="diagram-title">Deterministic calculations anchor a multi-agent report workflow.</text><g class="zone"><rect x="32" y="88" width="1216" height="536" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="48" y="96" width="456" height="20" rx="4" fill="#050505"/>
+<text x="56" y="112" class="tag">BUSINESS-ANALYSIS-WORKFLOW · ORDERED WITH PARALLEL GROUPS</text></g><path d="M328 196 H440" fill="none" stroke="#2e5bff" stroke-width="1.5" marker-end="url(#report-workflow-arrow-accent)"/><path d="M736 196 H848" fill="none" stroke="#2e5bff" stroke-width="1.5" marker-end="url(#report-workflow-arrow-accent)"/><path d="M996 256 V316" fill="none" stroke="#93a4c7" stroke-width="1.5" marker-end="url(#report-workflow-arrow)"/><path d="M848 376 H736" fill="none" stroke="#93a4c7" stroke-width="1.5" marker-end="url(#report-workflow-arrow)"/><path d="M440 376 H328" fill="none" stroke="#93a4c7" stroke-width="1.5" marker-end="url(#report-workflow-arrow)"/><path d="M180 436 V496" fill="none" stroke="#93a4c7" stroke-width="1.5" marker-end="url(#report-workflow-arrow)"/><path d="M328 556 H440" fill="none" stroke="#2e5bff" stroke-width="1.5" marker-end="url(#report-workflow-arrow-accent)"/><path d="M736 556 H848" fill="none" stroke="#2e5bff" stroke-width="1.5" marker-end="url(#report-workflow-arrow-accent)"/><g class="node input" data-node="Business briefing">
+<rect x="64" y="136" width="264" height="120" rx="8" fill="#050505"/>
+<rect x="64" y="136" width="264" height="120" rx="8" fill="#10182a" stroke="#647392" stroke-width="1.2"/>
+<text x="84" y="160" class="tag">INPUT</text>
+<text x="84" y="188" class="node-name">Business briefing</text><text x="84" y="208" class="node-detail">Financials · Place · social</text>
+</g><g class="node backend" data-node="Financial calculations">
+<rect x="440" y="136" width="296" height="120" rx="8" fill="#050505"/>
+<rect x="440" y="136" width="296" height="120" rx="8" fill="#0d1324" stroke="#46577f" stroke-width="1.2"/>
+<text x="460" y="160" class="tag">DETERMINISTIC</text>
+<text x="460" y="188" class="node-name">Financial calculations</text><text x="460" y="208" class="node-detail">Margins · break-even · menu</text>
+</g><g class="node backend" data-node="Place details">
+<rect x="848" y="136" width="296" height="120" rx="8" fill="#050505"/>
+<rect x="848" y="136" width="296" height="120" rx="8" fill="#0d1324" stroke="#46577f" stroke-width="1.2"/>
+<text x="868" y="160" class="tag">ENRICH</text>
+<text x="868" y="188" class="node-name">Place details</text><text x="868" y="208" class="node-detail">Location · rating · style</text>
+</g><g class="node external" data-node="External collection">
+<rect x="848" y="316" width="296" height="120" rx="8" fill="#050505"/>
+<rect x="848" y="316" width="296" height="120" rx="8" fill="#0a101e" stroke="#34415f" stroke-width="1.2"/>
+<text x="868" y="340" class="tag">PARALLEL DATA</text>
+<text x="868" y="368" class="node-name">External collection</text><text x="868" y="388" class="node-detail">Reviews · competitors · social</text>
+</g><g class="node backend" data-node="Signal extraction">
+<rect x="440" y="316" width="296" height="120" rx="8" fill="#050505"/>
+<rect x="440" y="316" width="296" height="120" rx="8" fill="#0d1324" stroke="#46577f" stroke-width="1.2"/>
+<text x="460" y="340" class="tag">PARALLEL AI</text>
+<text x="460" y="368" class="node-name">Signal extraction</text><text x="460" y="388" class="node-detail">Semantics · social audit</text>
+</g><g class="node focal" data-node="CBO directive">
+<rect x="64" y="316" width="264" height="120" rx="8" fill="#050505"/>
+<rect x="64" y="316" width="264" height="120" rx="8" fill="#0c1b55" stroke="#2e5bff" stroke-width="1.2"/>
+<text x="84" y="340" class="tag">STRATEGY</text>
+<text x="84" y="368" class="node-name">CBO directive</text><text x="84" y="388" class="node-detail">Theme · North Star · status</text>
+</g><g class="node backend" data-node="Expert sections">
+<rect x="64" y="496" width="264" height="120" rx="8" fill="#050505"/>
+<rect x="64" y="496" width="264" height="120" rx="8" fill="#0d1324" stroke="#46577f" stroke-width="1.2"/>
+<text x="84" y="520" class="tag">PARALLEL AI</text>
+<text x="84" y="548" class="node-name">Expert sections</text><text x="84" y="568" class="node-detail">Financial · digital · market</text>
+</g><g class="node focal" data-node="CBO action plan">
+<rect x="440" y="496" width="296" height="120" rx="8" fill="#050505"/>
+<rect x="440" y="496" width="296" height="120" rx="8" fill="#0c1b55" stroke="#2e5bff" stroke-width="1.2"/>
+<text x="460" y="520" class="tag">SYNTHESIS</text>
+<text x="460" y="548" class="node-name">CBO action plan</text><text x="460" y="568" class="node-detail">Phases · tasks · outcomes</text>
+</g><g class="node store" data-node="Report manifest">
+<rect x="848" y="496" width="296" height="120" rx="8" fill="#050505"/>
+<rect x="848" y="496" width="296" height="120" rx="8" fill="#111a31" stroke="#405071" stroke-width="1.2"/>
+<text x="868" y="520" class="tag">OUTPUT</text>
+<text x="868" y="548" class="node-name">Report manifest</text><text x="868" y="568" class="node-detail">Metadata · directive · 4 sections</text>
+</g>
+<line x1="40" y1="656" x2="1240" y2="656" stroke="#263252"/><text x="40" y="688" class="diagram-footer">Parallel groups reduce elapsed time; the manifest is the durable report output.</text></svg></div></figure>
+<h3 id="4-business-analysis-workflow-processing-stages">Processing stages</h3>
+<ul>
+<li><strong>Financial calculation:</strong> deterministic TypeScript calculates net revenue, variable and fixed costs, profit, margins, contribution margin, break-even values, and menu-item metrics.</li>
+<li><strong>Place enrichment:</strong> Google Places supplies location, rating, reviews count, business type, opening information, photos, and service-style signals.</li>
+<li><strong>External collection:</strong> target reviews, nearby competitors, and social profiles are collected in parallel.</li>
+<li><strong>Competitor enrichment:</strong> the six strongest nearby listings by rating and review volume receive review samples and heuristic revenue estimates.</li>
+<li><strong>Signal extraction:</strong> semantic review analysis and social engagement audit run in parallel with structured-output fallbacks.</li>
+<li><strong>Strategic directive:</strong> the CBO agent sets the report theme, North Star metric, focus areas, and overall status.</li>
+<li><strong>Expert analysis:</strong> financial, digital, and market agents produce report sections in parallel.</li>
+<li><strong>Action plan:</strong> the CBO agent synthesizes expert findings into phased tasks and expected outcomes.</li>
+<li><strong>Assembly:</strong> the workflow returns metadata, directive, and four report sections as a validated report manifest.</li>
+</ul>
+<h3 id="4-business-analysis-workflow-calculation-and-model-boundary">Calculation and model boundary</h3>
+<div class="table-scroll" role="region" aria-label="Architecture reference table; scroll horizontally on small screens" tabindex="0"><table>
+<thead><tr><th>Deterministic application code</th><th>Model-generated output</th></tr></thead><tbody>
+<tr><td>Financial totals and ratios</td><td>Strategic theme and North Star framing</td></tr>
+<tr><td>Product revenue, cost, margin, and menu category</td><td>Narrative conclusions and risks</td></tr>
+<tr><td>Location radius and competitor selection rules</td><td>Semantic themes and critical weakness</td></tr>
+<tr><td>Reputation-weighted market-share inputs</td><td>Digital and market interpretation</td></tr>
+<tr><td>Health-score formula</td><td>Action tasks and expected targets</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Structured outputs:</strong> agent calls use Zod schemas and fallback values for directive, section, semantic, and social-audit generation.</li>
+<li><strong>Partial-provider behavior:</strong> social scraping degrades to an error-bearing empty profile; competitor review calls use <code>Promise.allSettled</code>; several other provider failures can stop their workflow step.</li>
+</ul>
+<h2 id="5-ai-agents-and-tools">5. AI agents and tools</h2>
+<figure id="agent-collaboration"><div class="diagram-scroll" role="region" aria-label="The workflow coordinates specialists; the CBO supplies strategy and synthesis.; scroll horizontally on small screens" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="agent-collaboration-title agent-collaboration-desc"><title id="agent-collaboration-title">The workflow coordinates specialists; the CBO supplies strategy and synthesis.</title><desc id="agent-collaboration-desc">Mastra coordinates extractor agents, expert agents, tools, the CBO agent, and schema-validated report output.</desc><defs>
+<marker id="agent-collaboration-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#93a4c7"/></marker>
+<marker id="agent-collaboration-arrow-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2e5bff"/></marker>
+<marker id="agent-collaboration-arrow-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#00d1ff"/></marker>
+</defs>
+<rect width="1280" height="720" fill="#050505"/><text x="40" y="56" class="diagram-title">The workflow coordinates specialists; the CBO supplies strategy and synthesis.</text><g class="zone"><rect x="32" y="96" width="1216" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="48" y="104" width="152" height="20" rx="4" fill="#050505"/>
+<text x="56" y="120" class="tag">MASTRA AGENT SYSTEM</text></g><path d="M384 220 H404 Q412 220 412 228 V296 Q412 304 420 304 H440" fill="none" stroke="#93a4c7" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#agent-collaboration-arrow)"/><path d="M384 500 H404 Q412 500 412 492 V392 Q412 384 420 384 H440" fill="none" stroke="#93a4c7" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#agent-collaboration-arrow)"/><path d="M744 304 H812 Q820 304 820 296 V228 Q820 220 828 220 H896" fill="none" stroke="#2e5bff" stroke-width="1.5" marker-end="url(#agent-collaboration-arrow-accent)"/><path d="M744 384 H812 Q820 384 820 392 V492 Q820 500 828 500 H896" fill="none" stroke="#2e5bff" stroke-width="1.5" marker-end="url(#agent-collaboration-arrow-accent)"/><g class="node backend" data-node="Semantic + social agents">
+<rect x="80" y="156" width="304" height="128" rx="8" fill="#050505"/>
+<rect x="80" y="156" width="304" height="128" rx="8" fill="#0d1324" stroke="#46577f" stroke-width="1.2"/>
+<text x="100" y="180" class="tag">EXTRACTORS</text>
+<text x="100" y="208" class="node-name">Semantic + social agents</text><text x="100" y="228" class="node-detail">Sonnet 4.6 · structured signals</text>
+</g><g class="node external" data-node="Provider + report tools">
+<rect x="80" y="436" width="304" height="128" rx="8" fill="#050505"/>
+<rect x="80" y="436" width="304" height="128" rx="8" fill="#0a101e" stroke="#34415f" stroke-width="1.2"/>
+<text x="100" y="460" class="tag">TOOLS</text>
+<text x="100" y="488" class="node-name">Provider + report tools</text><text x="100" y="508" class="node-detail">Places · SerpAPI · social · Run</text>
+</g><g class="node focal" data-node="Workflow + CBO agent">
+<rect x="440" y="268" width="304" height="152" rx="8" fill="#050505"/>
+<rect x="440" y="268" width="304" height="152" rx="8" fill="#0c1b55" stroke="#2e5bff" stroke-width="1.2"/>
+<text x="460" y="292" class="tag">ORCHESTRATION</text>
+<text x="460" y="320" class="node-name">Workflow + CBO agent</text><text x="460" y="340" class="node-detail">Opus 4.6</text><text x="460" y="364" class="node-detail">Directive · synthesis · Q&amp;A</text>
+</g><g class="node backend" data-node="Financial · digital · market">
+<rect x="896" y="156" width="304" height="128" rx="8" fill="#050505"/>
+<rect x="896" y="156" width="304" height="128" rx="8" fill="#0d1324" stroke="#46577f" stroke-width="1.2"/>
+<text x="916" y="180" class="tag">EXPERTS</text>
+<text x="916" y="208" class="node-name">Financial · digital · market</text><text x="916" y="228" class="node-detail">Opus 4.6 · parallel sections</text>
+</g><g class="node store" data-node="Schemas + fallbacks">
+<rect x="896" y="436" width="304" height="128" rx="8" fill="#050505"/>
+<rect x="896" y="436" width="304" height="128" rx="8" fill="#111a31" stroke="#405071" stroke-width="1.2"/>
+<text x="916" y="460" class="tag">STRUCTURED OUTPUT</text>
+<text x="916" y="488" class="node-name">Schemas + fallbacks</text><text x="916" y="508" class="node-detail">Directive · sections · manifest</text>
+</g>
+<line x1="40" y1="656" x2="1240" y2="656" stroke="#263252"/><text x="40" y="688" class="diagram-footer">Dashed paths show supporting context; models are routed through OpenRouter.</text></svg></div></figure>
+<div class="table-scroll" role="region" aria-label="Architecture reference table; scroll horizontally on small screens" tabindex="0"><table>
+<thead><tr><th>Agent</th><th>Model route</th><th>Responsibility</th></tr></thead><tbody>
+<tr><td>CBO agent</td><td>OpenRouter → Anthropic Claude Opus 4.6</td><td>Strategic directive, action-plan synthesis, and report Q&amp;A</td></tr>
+<tr><td>Financial expert</td><td>OpenRouter → Anthropic Claude Opus 4.6</td><td>Profitability, costs, break-even, menu economics, and revenue positioning</td></tr>
+<tr><td>Digital expert</td><td>OpenRouter → Anthropic Claude Opus 4.6</td><td>Reviews, sentiment, social performance, and digital recommendations</td></tr>
+<tr><td>Market expert</td><td>OpenRouter → Anthropic Claude Opus 4.6</td><td>Direct competitors, reputation share, market context, and opportunities</td></tr>
+<tr><td>Semantic analysis agent</td><td>OpenRouter → Anthropic Claude Sonnet 4.6</td><td>Arabic themes, sentiment score, strengths, weaknesses, and critical complaint</td></tr>
+<tr><td>Social engagement auditor</td><td>OpenRouter → Anthropic Claude Sonnet 4.6</td><td>Platform benchmarks, engagement health, content gaps, and top content</td></tr>
+</tbody></table></div>
+<h3 id="5-ai-agents-and-tools-tool-boundaries">Tool boundaries</h3>
+<ul>
+<li><strong>Google Places tools:</strong> place details, nearby search, photo resolution, and autocomplete.</li>
+<li><strong>SerpAPI tools:</strong> Google Maps review collection and market web search.</li>
+<li><strong>ScrapeCreators tool:</strong> Instagram and TikTok profile and recent-content collection.</li>
+<li><strong>Report-data tool:</strong> reads a completed workflow Run and returns a selected report or step-data section.</li>
+<li><strong>Memory:</strong> the CBO agent uses observational memory, generated Thread titles, messages, and working memory.</li>
+<li><strong>Language:</strong> expert narrative output is directed to professional Saudi Arabic; the social signal extractor emits English intermediate strings that the digital expert consumes.</li>
+</ul>
+<h2 id="6-data-state-and-retention">6. Data, state, and retention</h2>
+<figure id="data-state"><div class="diagram-scroll" role="region" aria-label="Report continuity spans browser state, managed persistence, and telemetry stores.; scroll horizontally on small screens" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="data-state-title data-state-desc"><title id="data-state-title">Report continuity spans browser state, managed persistence, and telemetry stores.</title><desc id="data-state-desc">Browser local storage keeps the current session while Mastra persists runs and memory in Turso and exports observability to DuckDB and Mastra Platform.</desc><defs>
+<marker id="data-state-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#93a4c7"/></marker>
+<marker id="data-state-arrow-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2e5bff"/></marker>
+<marker id="data-state-arrow-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#00d1ff"/></marker>
+</defs>
+<rect width="1280" height="720" fill="#050505"/><text x="40" y="56" class="diagram-title">Report continuity spans browser state, managed persistence, and telemetry stores.</text><g class="zone"><rect x="32" y="96" width="320" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="48" y="104" width="104" height="20" rx="4" fill="#050505"/>
+<text x="56" y="120" class="tag">CLIENT DEVICE</text></g><g class="zone"><rect x="392" y="96" width="448" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="408" y="104" width="152" height="20" rx="4" fill="#050505"/>
+<text x="416" y="120" class="tag">APPLICATION RUNTIME</text></g><g class="zone"><rect x="880" y="96" width="368" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="896" y="104" width="144" height="20" rx="4" fill="#050505"/>
+<text x="904" y="120" class="tag">MANAGED / EXTERNAL</text></g><path d="M304 240 H440" fill="none" stroke="#00d1ff" stroke-width="1.5" marker-end="url(#data-state-arrow-link)"/><path d="M792 240 H928" fill="none" stroke="#2e5bff" stroke-width="1.5" marker-end="url(#data-state-arrow-accent)"/><path d="M616 316 V448" fill="none" stroke="#93a4c7" stroke-width="1.5" marker-end="url(#data-state-arrow)"/><path d="M792 508 H928" fill="none" stroke="#93a4c7" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#data-state-arrow)"/><g class="node input" data-node="Browser report + draft">
+<rect x="64" y="168" width="240" height="144" rx="8" fill="#050505"/>
+<rect x="64" y="168" width="240" height="144" rx="8" fill="#10182a" stroke="#647392" stroke-width="1.2"/>
+<text x="84" y="192" class="tag">LOCAL STORAGE</text>
+<text x="84" y="220" class="node-name">Browser report + draft</text><text x="84" y="240" class="node-detail">cbo-report · cbo-form-draft</text>
+</g><g class="node focal" data-node="Next.js + Mastra">
+<rect x="440" y="160" width="352" height="160" rx="8" fill="#050505"/>
+<rect x="440" y="160" width="352" height="160" rx="8" fill="#0c1b55" stroke="#2e5bff" stroke-width="1.2"/>
+<text x="460" y="184" class="tag">STATE ACCESS</text>
+<text x="460" y="212" class="node-name">Next.js + Mastra</text><text x="460" y="232" class="node-detail">Workflow Runs · memory</text><text x="460" y="256" class="node-detail">Server actions · API routes</text>
+</g><g class="node store" data-node="Turso LibSQL">
+<rect x="928" y="168" width="272" height="144" rx="8" fill="#050505"/>
+<rect x="928" y="168" width="272" height="144" rx="8" fill="#111a31" stroke="#405071" stroke-width="1.2"/>
+<text x="948" y="192" class="tag">DEFAULT STORE</text>
+<text x="948" y="220" class="node-name">Turso LibSQL</text><text x="948" y="240" class="node-detail">Runs · messages · memory</text>
+</g><g class="node store" data-node="DuckDB">
+<rect x="440" y="448" width="352" height="120" rx="8" fill="#050505"/>
+<rect x="440" y="448" width="352" height="120" rx="8" fill="#111a31" stroke="#405071" stroke-width="1.2"/>
+<text x="460" y="472" class="tag">LOCAL TELEMETRY</text>
+<text x="460" y="500" class="node-name">DuckDB</text><text x="460" y="520" class="node-detail">Observability domain file</text>
+</g><g class="node external" data-node="Mastra Platform">
+<rect x="928" y="448" width="272" height="120" rx="8" fill="#050505"/>
+<rect x="928" y="448" width="272" height="120" rx="8" fill="#0a101e" stroke="#34415f" stroke-width="1.2"/>
+<text x="948" y="472" class="tag">REMOTE TELEMETRY</text>
+<text x="948" y="500" class="node-name">Mastra Platform</text><text x="948" y="520" class="node-detail">Exported trace data</text>
+</g>
+<line x1="40" y1="656" x2="1240" y2="656" stroke="#263252"/><text x="40" y="688" class="diagram-footer">No application user, account, organization, or report-owner data model is defined.</text></svg></div></figure>
+<div class="table-scroll" role="region" aria-label="Architecture reference table; scroll horizontally on small screens" tabindex="0"><table>
+<thead><tr><th>Data class</th><th>Current store or destination</th><th>Access key in source</th></tr></thead><tbody>
+<tr><td>Form draft and current-report UI state</td><td>Browser local storage through direct draft writes and Zustand</td><td>Browser profile; <code>cbo-form-draft</code> and <code>cbo-report</code> keys</td></tr>
+<tr><td>Workflow Run state and outputs</td><td>Mastra default LibSQL store on Turso</td><td>Run identifier</td></tr>
+<tr><td>Conversation messages and working memory</td><td>Mastra Memory through the default store</td><td>Thread identifier plus constant resource <code>user</code></td></tr>
+<tr><td>Local observability records</td><td>DuckDB file <code>mastra-observability.duckdb</code></td><td>Application runtime filesystem</td></tr>
+<tr><td>Platform traces</td><td>Mastra Platform exporter</td><td>Platform configuration outside this repository</td></tr>
+<tr><td>Provider request data</td><td>Google, SerpAPI, ScrapeCreators, OpenRouter/model provider</td><td>Provider credentials and request payloads</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>No application database model:</strong> the repository defines workflow schemas and storage adapters, not business-account, organization, user, or report-owner entities.</li>
+<li><strong>Global resource:</strong> server actions and chat routes use the literal Mastra resource identifier <code>user</code>.</li>
+<li><strong>Report recovery:</strong> report pages and the report-data tool load workflow state directly by Run identifier.</li>
+<li><strong>Retention:</strong> no time-based deletion, user deletion flow, archival policy, or retention period is implemented in source.</li>
+<li><strong>Backups and restore:</strong> backup coverage and restore behavior for Turso, DuckDB, browser state, and Mastra Platform are not verified.</li>
+</ul>
+<h2 id="7-integrations-and-information-flow">7. Integrations and information flow</h2>
+<figure id="integration-landscape"><div class="diagram-scroll" role="region" aria-label="Provider calls supply intelligence, persistence, and telemetry.; scroll horizontally on small screens" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="integration-landscape-title integration-landscape-desc"><title id="integration-landscape-title">Provider calls supply intelligence, persistence, and telemetry.</title><desc id="integration-landscape-desc">The CBO.AI application calls model, discovery, review, social, storage, mapping, and observability providers.</desc><defs>
+<marker id="integration-landscape-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#93a4c7"/></marker>
+<marker id="integration-landscape-arrow-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2e5bff"/></marker>
+<marker id="integration-landscape-arrow-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#00d1ff"/></marker>
+</defs>
+<rect width="1280" height="720" fill="#050505"/><text x="40" y="56" class="diagram-title">Provider calls supply intelligence, persistence, and telemetry.</text><g class="zone"><rect x="32" y="96" width="400" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="48" y="104" width="96" height="20" rx="4" fill="#050505"/>
+<text x="56" y="120" class="tag">CBO.AI</text></g><g class="zone"><rect x="472" y="96" width="776" height="520" rx="8" fill="#07101f" stroke="#263252" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="488" y="104" width="144" height="20" rx="4" fill="#050505"/>
+<text x="496" y="120" class="tag">EXTERNAL PROVIDERS</text></g><path d="M384 240 H448 Q456 240 456 232 V184 Q456 176 464 176 H536" fill="none" stroke="#00d1ff" stroke-width="1.5" marker-end="url(#integration-landscape-arrow-link)"/><path d="M384 292 H448 Q456 292 456 300 V288 Q456 296 464 296 H536" fill="none" stroke="#00d1ff" stroke-width="1.5" marker-end="url(#integration-landscape-arrow-link)"/><path d="M384 344 H448 Q456 344 456 352 V408 Q456 416 464 416 H536" fill="none" stroke="#00d1ff" stroke-width="1.5" marker-end="url(#integration-landscape-arrow-link)"/><path d="M384 396 H448 Q456 396 456 404 V528 Q456 536 464 536 H536" fill="none" stroke="#93a4c7" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#integration-landscape-arrow)"/><g class="node focal" data-node="Next.js + Mastra">
+<rect x="80" y="232" width="304" height="208" rx="8" fill="#050505"/>
+<rect x="80" y="232" width="304" height="208" rx="8" fill="#0c1b55" stroke="#2e5bff" stroke-width="1.2"/>
+<text x="100" y="256" class="tag">APPLICATION</text>
+<text x="100" y="284" class="node-name">Next.js + Mastra</text><text x="100" y="304" class="node-detail">Report workflow</text><text x="100" y="328" class="node-detail">Agents + tools</text><text x="100" y="352" class="node-detail">Report UI + chat</text>
+</g><g class="node external" data-node="OpenRouter · Anthropic">
+<rect x="536" y="128" width="664" height="96" rx="8" fill="#050505"/>
+<rect x="536" y="128" width="664" height="96" rx="8" fill="#0a101e" stroke="#34415f" stroke-width="1.2"/>
+<text x="556" y="152" class="tag">MODEL INFERENCE</text>
+<text x="556" y="180" class="node-name">OpenRouter · Anthropic</text><text x="556" y="200" class="node-detail">All six agents</text>
+</g><g class="node external" data-node="Google Places · CARTO">
+<rect x="536" y="248" width="664" height="96" rx="8" fill="#050505"/>
+<rect x="536" y="248" width="664" height="96" rx="8" fill="#0a101e" stroke="#34415f" stroke-width="1.2"/>
+<text x="556" y="272" class="tag">LOCAL DISCOVERY</text>
+<text x="556" y="300" class="node-name">Google Places · CARTO</text><text x="556" y="320" class="node-detail">Listings · photos · maps</text>
+</g><g class="node external" data-node="SerpAPI · ScrapeCreators">
+<rect x="536" y="368" width="664" height="96" rx="8" fill="#050505"/>
+<rect x="536" y="368" width="664" height="96" rx="8" fill="#0a101e" stroke="#34415f" stroke-width="1.2"/>
+<text x="556" y="392" class="tag">RESEARCH + SOCIAL</text>
+<text x="556" y="420" class="node-name">SerpAPI · ScrapeCreators</text><text x="556" y="440" class="node-detail">Reviews · web · Instagram · TikTok</text>
+</g><g class="node store" data-node="Turso · DuckDB · Mastra Platform">
+<rect x="536" y="488" width="664" height="96" rx="8" fill="#050505"/>
+<rect x="536" y="488" width="664" height="96" rx="8" fill="#111a31" stroke="#405071" stroke-width="1.2"/>
+<text x="556" y="512" class="tag">STATE + TELEMETRY</text>
+<text x="556" y="540" class="node-name">Turso · DuckDB · Mastra Platform</text><text x="556" y="560" class="node-detail">Runs · memory · traces</text>
+</g>
+<line x1="40" y1="656" x2="1240" y2="656" stroke="#263252"/><text x="40" y="688" class="diagram-footer">Configured paths do not establish production credentials, quotas, regions, or active deployment.</text></svg></div></figure>
+<div class="table-scroll" role="region" aria-label="Architecture reference table; scroll horizontally on small screens" tabindex="0"><table>
+<thead><tr><th>Service</th><th>Application path</th><th>Information handled</th></tr></thead><tbody>
+<tr><td>OpenRouter / Anthropic models</td><td>All six agents</td><td>Financial values, place/review/social context, generated sections, and chat prompts</td></tr>
+<tr><td>Google Places API</td><td>Form autocomplete, details, nearby search, photos, and static maps</td><td>Search text, Place identifiers, location, listing metadata, and image requests</td></tr>
+<tr><td>SerpAPI</td><td>Google Maps reviews and market web search</td><td>Place identifiers, search queries, reviews, topics, and result links</td></tr>
+<tr><td>ScrapeCreators</td><td>Instagram and TikTok collection</td><td>Public handles, profile metadata, content statistics, captions, and URLs</td></tr>
+<tr><td>Turso LibSQL</td><td>Default Mastra storage</td><td>Workflow state, memory, messages, and related runtime records</td></tr>
+<tr><td>Mastra Platform</td><td>Observability exporter</td><td>Traces after sensitive-data processing configured by Mastra</td></tr>
+<tr><td>DuckDB</td><td>Observability storage domain</td><td>Runtime observability records on local disk</td></tr>
+<tr><td>CARTO basemaps</td><td>MapLibre style source</td><td>Browser map tile/style requests</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Direct image delivery:</strong> Google, Instagram, Facebook, TikTok, Google user-content, and avatar hosts are allowed by Next.js image configuration.</li>
+<li><strong>Client-visible provider requests:</strong> generated Google photo and static-map URLs can contain a Google API key in the query string.</li>
+<li><strong>Mock mode:</strong> reviews, web search, and social scraping include <code>MOCK_TOOLS=true</code> paths with synthetic data.</li>
+<li><strong>Not verified:</strong> provider account ownership, quotas, billing limits, processing regions, retention, and production enablement.</li>
+</ul>
+<h2 id="8-identity-access-and-security">8. Identity, access, and security</h2>
+<h3 id="8-identity-access-and-security-access-facts">Access facts</h3>
+<div class="table-scroll" role="region" aria-label="Architecture reference table; scroll horizontally on small screens" tabindex="0"><table>
+<thead><tr><th>Boundary</th><th>Current source behavior</th></tr></thead><tbody>
+<tr><td>User authentication</td><td>No active authentication, session lookup, middleware, or route authorization path was found</td></tr>
+<tr><td>Report ownership</td><td>A supplied Run identifier is used directly to load workflow state</td></tr>
+<tr><td>Conversation ownership</td><td>A supplied Thread identifier and shared resource <code>user</code> are used directly to recall or stream chat</td></tr>
+<tr><td>Workflow creation</td><td>The report stream accepts caller-provided business and financial input</td></tr>
+<tr><td>Memory seeding</td><td>The seed route accepts caller-provided manifest, Thread, and resource identifiers</td></tr>
+<tr><td>Abuse controls</td><td>No request-rate, provider-budget, payload-size, or per-user workflow limits were found</td></tr>
+<tr><td>Request validation</td><td>The seed route validates the manifest; other routes mainly destructure JSON and rely on downstream handlers or schemas</td></tr>
+<tr><td>Origin controls</td><td>No application-level CSRF or request-origin validation was found for mutation routes</td></tr>
+</tbody></table></div>
+<h3 id="8-identity-access-and-security-security-facts">Security facts</h3>
+<ul>
+<li><strong>Credential fallbacks:</strong> Google Places and SerpAPI credentials have literal fallback values in tracked source.</li>
+<li><strong>Browser exposure:</strong> Google photo and static-map URLs are assembled with the API key as a query parameter.</li>
+<li><strong>Sensitive business data:</strong> financial inputs, social metrics, reviews, and report content can reach model and data providers.</li>
+<li><strong>Application logging:</strong> routes and server actions log Run and Thread identifiers, workflow status, input keys, and a report-manifest sample.</li>
+<li><strong>Trace filtering:</strong> Mastra observability configures <code>SensitiveDataFilter</code>; this does not cover ordinary <code>console</code> or Pino application messages by itself.</li>
+<li><strong>Dependency versus implementation:</strong> <code>better-auth</code> is installed, but no authentication implementation was found in application source.</li>
+<li><strong>Transport and infrastructure:</strong> TLS termination, network controls, secret injection, key restrictions, administrative access, and production log access are not verified.</li>
+</ul>
+<h2 id="9-build-release-and-reliability">9. Build, release, and reliability</h2>
+<h3 id="9-build-release-and-reliability-build-and-release-facts">Build and release facts</h3>
+<ul>
+<li><strong>Commands:</strong> package scripts provide <code>dev</code>, <code>build</code>, <code>start</code>, <code>lint</code>, and <code>mastra</code>.</li>
+<li><strong>Package management:</strong> the repository contains a pnpm lockfile but no <code>packageManager</code> or Node engine declaration.</li>
+<li><strong>Type checking:</strong> TypeScript strict mode is enabled; Next.js is configured to ignore build-time TypeScript errors. The current standalone type check reports errors in server actions, chat streaming, UI components, and Mastra workflow typing.</li>
+<li><strong>Linting:</strong> the current repository-wide lint command reports existing errors and warnings across application and generated-style UI code.</li>
+<li><strong>Tests:</strong> no test script or tracked test files were found.</li>
+<li><strong>Continuous integration:</strong> no tracked GitHub Actions workflow or other repository CI definition was found.</li>
+<li><strong>Deployment:</strong> no Dockerfile, deployment manifest, or checked-in Vercel project configuration was found. Production host, region, replicas, runtime limits, and active commit are not verified.</li>
+<li><strong>Documentation:</strong> the README remains the generated Next.js starter guide and does not define the application deployment process.</li>
+</ul>
+<h3 id="9-build-release-and-reliability-failure-and-recovery-boundaries">Failure and recovery boundaries</h3>
+<ul>
+<li><strong>External dependency chain:</strong> report completion depends on managed storage, model access, and several data providers.</li>
+<li><strong>Long-running requests:</strong> report generation uses streamed HTTP requests with a declared 300-second maximum duration.</li>
+<li><strong>Fallbacks:</strong> structured model outputs have fallback values; social and competitor-review paths can continue with partial data. A fallback report section can therefore represent an upstream model failure as completed workflow output.</li>
+<li><strong>Run restoration:</strong> persisted Run state supports report reload and running-stream observation.</li>
+<li><strong>Retry safety:</strong> no application idempotency key, durable retry policy, provider circuit breaker, or workflow cancellation policy was found.</li>
+<li><strong>Memory update:</strong> final CBO working-memory update is best-effort and ignores errors.</li>
+<li><strong>Observability:</strong> Pino logging, local DuckDB storage, Mastra storage export, Mastra Platform export, and sensitive-span filtering are configured.</li>
+<li><strong>Not verified:</strong> alerting, uptime checks, backup schedule, restore tests, RTO, RPO, incident response, and provider-failure monitoring.</li>
+</ul>
+<h2 id="10-repository-plans">10. Repository plans</h2>
+<h3 id="10-repository-plans-report-history-and-comparison">Report history and comparison</h3>
+<ul>
+<li><strong>State:</strong> <code>PLAN.md</code> describes Plan Mode work and explicitly awaits agreement; the behavior is not implemented in current source.</li>
+<li><strong>History:</strong> retain past report manifests and expose report date, business identity, health score, and status.</li>
+<li><strong>Comparison:</strong> compare financial, digital, market, and action-plan results against a selected baseline.</li>
+<li><strong>Proposed persistence:</strong> browser local storage with a twenty-report limit.</li>
+<li><strong>Proposed routes:</strong> history listing, deletion, and baseline selection endpoints.</li>
+<li><strong>Non-goals in the plan:</strong> real-time collaboration, AI-generated comparison analysis, statistical forecasting, and cross-business benchmarking.</li>
+</ul>
+<ul>
+<li><strong>No current history model:</strong> the present Zustand store keeps one current Run, Thread, business name, form step, and form payload.</li>
+<li><strong>No current account boundary:</strong> the repository plan does not supply implemented user identity or server-side ownership for history records.</li>
+</ul>
+<h2 id="11-source-index">11. Source index</h2>
+<p>The links below describe repository source at <code>main</code> commit <code>0605bd9042f43153172c3bddc02553ad33cf2be1</code>.</p>
+<div class="table-scroll" role="region" aria-label="Architecture reference table; scroll horizontally on small screens" tabindex="0"><table>
+<thead><tr><th>Area</th><th>Main references</th></tr></thead><tbody>
+<tr><td>Product and repository conventions</td><td><a href="../../AGENTS.md">AGENTS.md</a>, <a href="../../package.json">package manifest</a>, <a href="../../tsconfig.json">TypeScript</a>, <a href="../../next.config.ts">Next.js config</a></td></tr>
+<tr><td>Entry pages and UI state</td><td><a href="../../src/app/page.tsx">form page</a>, <a href="../../src/app/report/[runId]/page.tsx">report page</a>, <a href="../../src/components/report-session.tsx">report session</a>, <a href="../../src/store/report-store.ts">browser store</a></td></tr>
+<tr><td>Server paths</td><td><a href="../../src/app/actions.ts">server actions</a>, <a href="../../src/app/api/report/stream/route.ts">workflow stream</a>, <a href="../../src/app/api/report/observe/route.ts">workflow observe</a>, <a href="../../src/app/api/report/seed/route.ts">report seed</a>, <a href="../../src/app/api/chat/route.ts">chat</a></td></tr>
+<tr><td>Mastra composition</td><td><a href="../../src/mastra/index.ts">Mastra runtime</a>, <a href="../../src/mastra/workflows/main-workflow.ts">business workflow</a></td></tr>
+<tr><td>Data contracts and calculations</td><td><a href="../../src/mastra/shared/schemas.ts">schemas</a>, <a href="../../src/mastra/shared/financials.ts">financial calculations</a>, <a href="../../src/lib/types.ts">frontend types</a></td></tr>
+<tr><td>Agents</td><td><a href="../../src/mastra/agents/CBO-agent.ts">CBO</a>, <a href="../../src/mastra/agents/financial-expert-agent.ts">financial</a>, <a href="../../src/mastra/agents/digital-expert-agent.ts">digital</a>, <a href="../../src/mastra/agents/market-expert-agent.ts">market</a>, <a href="../../src/mastra/agents/semantic-analysis.ts">semantic</a>, <a href="../../src/mastra/agents/social-engagement-auditor.ts">social audit</a></td></tr>
+<tr><td>External tools</td><td><a href="../../src/mastra/tools/google-places.ts">Google Places</a>, <a href="../../src/mastra/tools/google-maps-reiews.ts">Google reviews</a>, <a href="../../src/mastra/tools/social-media-scrape.ts">social scraping</a>, <a href="../../src/mastra/tools/web-search.ts">web search</a>, <a href="../../src/mastra/tools/report-data.ts">report data</a></td></tr>
+<tr><td>Interface styling</td><td><a href="../../src/app/layout.tsx">root layout</a>, <a href="../../src/app/globals.css">brand tokens</a>, <a href="../../src/components/report-view.tsx">report view</a>, <a href="../../src/components/chat-sidebar.tsx">chat sidebar</a></td></tr>
+<tr><td>Repository plan</td><td><a href="../../PLAN.md">PLAN.md</a></td></tr>
+</tbody></table></div>
+</main>
+<footer>CBO.AI solution architecture · Repository links require the checkout.</footer>
+</body></html>
