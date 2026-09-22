@@ -2,7 +2,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+Create `.env` from [`.env.example`](.env.example) if it does not already exist, then fill in your development credentials. Check the database target noted in the template before connecting.
+
+Run the development server:
 
 ```bash
 npm run dev
